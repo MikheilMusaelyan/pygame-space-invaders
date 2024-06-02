@@ -56,13 +56,31 @@ class Player(Ship):
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
 
+class Enemy(Ship):
+    COLOR_MAP = {
+        "red": (RED_SPACESHIP, RED_LASER),
+        "blue": (BLUE_SPACESHIP, BLUE_LASER),
+        "green": (GREEN_SPACESHIP, GREEN_LASER)
+    }
+
+    def __init__(self, x, y, color, health=100):
+        super().__init__(x, y, health)
+        self.ship_img, self.laser_img = self.COLOR_MAP[color]
+        self.mask = pygame.mask.from_surface(self.ship_img)
+
+    def move(self, vel):
+        self.y += vel
 
 def main():
     run = True
     FPS = 60 # how fast the game gors
-    level = 1
+    level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
+
+    enemies = []
+    wave_length = 5 # how many enemies each wave
+    enemy_vel = 1 # move speed
 
     player_vel = 5 # on each keypress move howmany pixels
 
@@ -79,13 +97,15 @@ def main():
         WIN.blit(lives_label, (10, 10))
         WIN.blit(level, (WIDTH - level_label.get_width() - 10, 10))
 
+        for enemy in enemies:
+            enemy.draw(WIN)
+
         player.draw(WIN)
 
         pygame.display.update() # render
 
     while run:
         clock.tick(FPS)
-        redraw_window()
 
         for event in pygame.event.get(): # pressing
             if event.type == pygame.QUIT: # x in corner
@@ -100,4 +120,7 @@ def main():
             player.y = max(player.y - player_vel, 0)
         if keys[pygame.K_s]: # down
             player.y = min(player.y + player_vel, 750 - player.get_height())
+
+        redraw_window()
+
 main()
