@@ -106,6 +106,14 @@ def main():
 
     while run:
         clock.tick(FPS)
+        
+        # when beat the current wave of enemies
+        if len(enemies) == 0:
+            level += 1
+            wave_length += 5
+            for i in range(wave_length):
+                enemy = Enemy(random.randrange(50, WIDTH - 100), random.randrange(-1500, -100), random.choice(['red', 'blue', 'green']))
+                enemies.append(enemy)
 
         for event in pygame.event.get(): # pressing
             if event.type == pygame.QUIT: # x in corner
@@ -121,6 +129,10 @@ def main():
         if keys[pygame.K_s]: # down
             player.y = min(player.y + player_vel, 750 - player.get_height())
 
+        # for enemy this just comes down
+        for enemy in enemies:
+            enemy.move(enemy_vel)
+        
         redraw_window()
 
 main()
