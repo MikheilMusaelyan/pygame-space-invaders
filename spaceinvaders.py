@@ -42,7 +42,20 @@ class Ship:
     def draw(self, window):
         window.blit(self.ship_img (self.x, self.y))
 
-        
+    def get_width(self):
+        return self.ship_img.get_width()
+    
+    def get_height(self):
+        return self.ship_img.get_height()
+
+class Player(Ship):
+    def __init__(self, x, y, health=100):
+        super().__init__(x, y, health)
+        self.ship_img = YELLOW_SPACESHIP
+        self.laser_img = YELLOW_LASER
+        self.mask = pygame.mask.from_surface(self.ship_img)
+        self.max_health = health
+
 
 def main():
     run = True
@@ -53,7 +66,7 @@ def main():
 
     player_vel = 5 # on each keypress move howmany pixels
 
-    ship = Ship(300, 650)
+    player = Player(300, 650)
 
     clock = pygame.time.Clock()
 
@@ -66,7 +79,7 @@ def main():
         WIN.blit(lives_label, (10, 10))
         WIN.blit(level, (WIDTH - level_label.get_width() - 10, 10))
 
-        ship.draw(WIN)
+        player.draw(WIN)
 
         pygame.display.update() # render
 
@@ -80,11 +93,11 @@ def main():
 
         keys = pygame.key.get_pressed() # keys that are pressed
         if keys[pygame.K_a]: # left
-            ship.x = max(ship.x - player_vel, 0)
+            player.x = max(player.x - player_vel, 0)
         if keys[pygame.K_d]: # right
-            ship.x = min(ship.x + player_vel, 700) # -50
+            player.x = min(player.x + player_vel, 750 - player.get_width())
         if keys[pygame.K_w]: # up
-            ship.y = max(ship.y - player_vel, 0)
+            player.y = max(player.y - player_vel, 0)
         if keys[pygame.K_s]: # down
-            ship.y = min(ship.y + player_vel, 700) # -50
+            player.y = min(player.y + player_vel, 750 - player.get_height())
 main()
