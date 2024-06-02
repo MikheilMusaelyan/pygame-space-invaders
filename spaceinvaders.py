@@ -77,6 +77,7 @@ def main():
     level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
+    lost_font = pygame.font.SysFont("comicsans", 60)
 
     enemies = []
     wave_length = 5 # how many enemies each wave
@@ -87,6 +88,9 @@ def main():
     player = Player(300, 650)
 
     clock = pygame.time.Clock()
+
+    lost = False
+    lost_count = 0
 
     def redraw_window():
         WIN.blit(BG, (0, 0)) # draw image
@@ -102,10 +106,25 @@ def main():
 
         player.draw(WIN)
 
+        if lost:
+           lost_label = lost_font.render("You Lost!!", 1, (255, 255, 255))
+           WIN.blit(lost_label, ((WIDTH / 2) - lost_label.get_width(), 350))
+
         pygame.display.update() # render
 
     while run:
         clock.tick(FPS)
+        redraw_window()
+
+        if lives <= 0 or player.health <= 0:
+            lost = True
+            lost_count += 1
+        
+        if lost:
+            if lost_count > FPS * 3: # 3 seconds
+                run = False
+            else:
+                continue
         
         # when beat the current wave of enemies
         if len(enemies) == 0:
@@ -130,9 +149,11 @@ def main():
             player.y = min(player.y + player_vel, 750 - player.get_height())
 
         # for enemy this just comes down
-        for enemy in enemies:
+        for enemy in enemies[:]: # make a copy so when u remove an enemy from the actual list no errors occur
             enemy.move(enemy_vel)
-        
-        redraw_window()
 
+            if enemy.y + enemy.get_height() > HEIGHT:
+                lives -= 1 # our lives
+                enemies.remove(enemy)
+        
 main()
