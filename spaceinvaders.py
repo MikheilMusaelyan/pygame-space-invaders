@@ -115,6 +115,14 @@ class Player(Ship):
                         objs.remove(obj)
                         self.lasers.remove(laser)
 
+    def draw(self, window):
+        super().draw(window)
+        self.healthbar(window)
+
+    def healthbar(self, window):
+        pygame.draw.rect(window, (255, 0, 0), (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width(), 10))
+        pygame.draw.rect(window, (0, 255, 0), (self.x, self.y + self.ship_img.get_height() + 10, self.ship_img.get_width() * (self.health / self.max_health)), 10)
+
 class Enemy(Ship):
     COLOR_MAP = {
         "red": (RED_SPACESHIP, RED_LASER),
@@ -154,7 +162,7 @@ def main():
     player_vel = 5 # on each keypress move howmany pixels
     laser_vel = 5
 
-    player = Player(300, 650)
+    player = Player(300, 630)
 
     clock = pygame.time.Clock()
 
@@ -206,7 +214,7 @@ def main():
 
         for event in pygame.event.get(): # pressing
             if event.type == pygame.QUIT: # x in corner
-                run = False
+                quit() # quit the whole program
 
         keys = pygame.key.get_pressed() # keys that are pressed
         if keys[pygame.K_a]: # left
@@ -216,7 +224,7 @@ def main():
         if keys[pygame.K_w]: # up
             player.y = max(player.y - player_vel, 0)
         if keys[pygame.K_s]: # down
-            player.y = min(player.y + player_vel, 750 - player.get_height())
+            player.y = min(player.y + player_vel, 750 - player.get_height() - 15)
         if keys[pygame.K_SPACE]:
             player.shoot()
 
@@ -238,5 +246,21 @@ def main():
             
         
         player.move_lasers(-laser_vel, enemies)
-        
+
+def main_menu():
+    title_font = pygame.font.SysFont("comicsans", 70)
+    run = True
+    while run:
+        WIN.blit(BG, (0, 0))
+        title_label = title_font.render("Press the mouse to begin", 1 (255, 255, 255))
+        WIN.blit(title_label, (WIDTH / 2 - title_label.get_width(), 350))
+
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                main()
+    pygame.quit()
+
 main()
