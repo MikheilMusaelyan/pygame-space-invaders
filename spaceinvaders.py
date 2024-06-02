@@ -40,8 +40,9 @@ class Ship:
         self.cool_down_counter = 0
     
     def draw(self, window):
-        pygame.draw.rect(window, (255, 0, 0), (self.x, self.y, 50, 50))
+        window.blit(self.ship_img (self.x, self.y))
 
+        
 
 def main():
     run = True
@@ -49,6 +50,8 @@ def main():
     level = 1
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
+
+    player_vel = 5 # on each keypress move howmany pixels
 
     ship = Ship(300, 650)
 
@@ -74,5 +77,14 @@ def main():
         for event in pygame.event.get(): # pressing
             if event.type == pygame.QUIT: # x in corner
                 run = False
-                
+
+        keys = pygame.key.get_pressed() # keys that are pressed
+        if keys[pygame.K_a]: # left
+            ship.x = max(ship.x - player_vel, 0)
+        if keys[pygame.K_d]: # right
+            ship.x = min(ship.x + player_vel, 700) # -50
+        if keys[pygame.K_w]: # up
+            ship.y = max(ship.y - player_vel, 0)
+        if keys[pygame.K_s]: # down
+            ship.y = min(ship.y + player_vel, 700) # -50
 main()
