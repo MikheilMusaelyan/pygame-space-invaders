@@ -43,9 +43,6 @@ class Laser:
     
     def off_screen(self, height):
         return not(self.y < height and self.y >= 0)
-    
-    def collision(self, obj):
-        return collide(self, obj)
 
 
 # abstract class, health=optional
@@ -92,7 +89,10 @@ class Ship:
         return self.ship_img.get_width()
     
     def get_height(self):
-        return self.ship_img.get_height()        
+        return self.ship_img.get_height() 
+
+    def collision(self, obj):
+        return collide(self, obj)       
 
 class Player(Ship):
     def __init__(self, x, y, health=100):
@@ -129,6 +129,9 @@ class Enemy(Ship):
 
     def move(self, vel):
         self.y += vel
+
+    def collision(self, obj):
+        return collide(self, obj)
 
 # mask is important for hitting an object on its pixels, the object isn't a square
 def collide(obj1, obj2):
@@ -222,9 +225,17 @@ def main():
             enemy.move_lasers(laser_vel, player)
             enemy.move(enemy_vel)
 
-            if enemy.y + enemy.get_height() > HEIGHT:
+            # they shoot ab twice a second
+            if random.randrange(0, 120) == 1:
+                enemy.shoot()
+            
+            if collide(enemy, player):
+                enemies.remove(enemy)
+                player.health -= 10
+            elif enemy.y + enemy.get_height() > HEIGHT:
                 lives -= 1 # our lives
                 enemies.remove(enemy)
+            
         
         player.move_lasers(-laser_vel, enemies)
         
